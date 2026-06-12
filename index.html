@@ -202,10 +202,114 @@ footer p{color:var(--dim);font-size:13px}
 .reveal.in{opacity:1;transform:none}
 .reveal.d1{transition-delay:.08s}.reveal.d2{transition-delay:.16s}.reveal.d3{transition-delay:.24s}
 @keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}}
+
+/* ============================================================
+   DIRECTOR THEME — film-strip scrubber, clapperboard loader,
+   viewfinder reticle cursor, camera focus brackets, marquee
+   ============================================================ */
+body{padding-bottom:14px}
+
+/* film-strip scroll scrubber (bottom) */
+.film-timeline{position:fixed;left:0;right:0;bottom:0;height:13px;z-index:45;pointer-events:none;
+  background:repeating-linear-gradient(90deg,rgba(8,9,20,.92) 0 8px,rgba(22,24,42,.92) 8px 18px);
+  border-top:1px solid rgba(255,255,255,.07)}
+.film-timeline::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 16px,rgba(0,0,0,.55) 16px 18px);opacity:.6}
+.film-fill{position:absolute;top:0;bottom:0;left:0;width:0;background:linear-gradient(90deg,var(--grad1),var(--grad2));opacity:.78;box-shadow:0 0 16px rgba(124,92,255,.7)}
+.film-playhead{position:absolute;top:-5px;bottom:-5px;width:3px;left:0;background:#fff;box-shadow:0 0 12px #fff;border-radius:2px}
+.tl-label{position:fixed;right:14px;bottom:16px;z-index:46;font-family:'JetBrains Mono';font-size:10px;color:#7dffce;letter-spacing:1px;text-shadow:0 0 6px rgba(0,0,0,.8)}
+
+/* marquee ticker */
+.ticker{overflow:hidden;border-top:1px solid var(--panel-border);border-bottom:1px solid var(--panel-border);background:rgba(124,92,255,.05);padding:12px 0;margin-top:8px;
+  mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent)}
+.ticker .track{display:inline-flex;white-space:nowrap;animation:marquee 40s linear infinite}
+.ticker:hover .track{animation-play-state:paused}
+.ticker .it{display:inline-flex;align-items:center;gap:14px;padding:0 14px;font-family:'Space Grotesk';font-weight:600;font-size:14px;color:#cdd3f0}
+.ticker .it b{color:#fff}
+.ticker .it em{font-style:normal;color:var(--grad3)}
+.ticker .sep{color:var(--grad2)}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* clapperboard loader */
+.loader{position:fixed;inset:0;z-index:9999;background:#05060f;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;cursor:pointer;transition:opacity .6s ease,transform .6s ease}
+.loader.gone{opacity:0;transform:translateY(-14px);pointer-events:none}
+.clap{position:relative;width:240px}
+.clap .top{height:38px;border-radius:5px;transform-origin:left center;background:repeating-linear-gradient(135deg,#fff 0 15px,#111 15px 30px);box-shadow:0 6px 18px rgba(0,0,0,.5);animation:clapsnap 2.6s ease-in-out infinite}
+.clap .board{height:84px;margin-top:5px;border:2px solid #fff;border-radius:5px;background:#0c0e1d;color:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;font-family:'JetBrains Mono';line-height:1.55;box-shadow:0 12px 34px rgba(0,0,0,.65)}
+.clap .board .t1{font-size:14px;letter-spacing:3px;font-weight:700}
+.clap .board .t2{font-size:11px;color:var(--grad2);letter-spacing:2px}
+.clap .board .t3{font-size:10px;color:#8b93bd}
+@keyframes clapsnap{0%,55%,100%{transform:rotate(0)}63%{transform:rotate(-58deg)}72%{transform:rotate(0)}}
+.loader .lsub{font-family:'JetBrains Mono';font-size:11px;color:var(--dim);letter-spacing:2px}
+
+/* viewfinder reticle cursor */
+.reticle{position:fixed;top:0;left:0;width:34px;height:34px;margin:-17px 0 0 -17px;z-index:9000;pointer-events:none;opacity:0;transition:opacity .3s,width .18s,height .18s,margin .18s}
+.reticle.on{opacity:1}
+.reticle .rc{position:absolute;width:9px;height:9px;border:1.5px solid #22d3ee}
+.reticle .rc.tl{top:0;left:0;border-right:0;border-bottom:0}
+.reticle .rc.tr{top:0;right:0;border-left:0;border-bottom:0}
+.reticle .rc.bl{bottom:0;left:0;border-right:0;border-top:0}
+.reticle .rc.br{bottom:0;right:0;border-left:0;border-top:0}
+.reticle .dot{position:absolute;top:50%;left:50%;width:4px;height:4px;margin:-2px;background:#ff5c8a;border-radius:50%;box-shadow:0 0 8px #ff5c8a}
+.reticle.hot{width:56px;height:56px;margin:-28px 0 0 -28px}
+.reticle.hot .rc{border-color:#ff5c8a;width:12px;height:12px}
+body.reticle-on,body.reticle-on *{cursor:none!important}
+
+/* camera focus brackets on video cards */
+.pcard,.gcard{position:relative}
+.pcard::before,.gcard::before{content:"";position:absolute;inset:8px;z-index:5;pointer-events:none;opacity:0;transition:opacity .3s;--vf:#22d3ee}
+.pcard::before{--vf:#ff5c8a}
+.pcard:hover::before,.gcard:hover::before{opacity:.92;
+  background:
+    linear-gradient(var(--vf),var(--vf)) left top/26px 2px no-repeat,
+    linear-gradient(var(--vf),var(--vf)) left top/2px 26px no-repeat,
+    linear-gradient(var(--vf),var(--vf)) right top/26px 2px no-repeat,
+    linear-gradient(var(--vf),var(--vf)) right top/2px 26px no-repeat,
+    linear-gradient(var(--vf),var(--vf)) left bottom/26px 2px no-repeat,
+    linear-gradient(var(--vf),var(--vf)) left bottom/2px 26px no-repeat,
+    linear-gradient(var(--vf),var(--vf)) right bottom/26px 2px no-repeat,
+    linear-gradient(var(--vf),var(--vf)) right bottom/2px 26px no-repeat}
+
+/* glitch hover on hero accent word */
+.grad.glitch{display:inline-block;position:relative}
+.grad.glitch::before,.grad.glitch::after{content:attr(data-text);position:absolute;inset:0;opacity:0;pointer-events:none;background:#05060f}
+.grad.glitch:hover::before{opacity:.85;color:#22d3ee;transform:translate(-2px,0);mix-blend-mode:screen;animation:gx .5s steps(2) infinite}
+.grad.glitch:hover::after{opacity:.85;color:#ff5c8a;transform:translate(2px,0);mix-blend-mode:screen;animation:gy .5s steps(2) infinite}
+@keyframes gx{0%,100%{clip-path:inset(0 0 82% 0)}50%{clip-path:inset(58% 0 8% 0)}}
+@keyframes gy{0%,100%{clip-path:inset(72% 0 6% 0)}50%{clip-path:inset(10% 0 68% 0)}}
+
+/* agent chips for multi-agent section */
+.agentchips{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:18px 0 6px}
+.achip{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:999px;font-size:13.5px;font-weight:600;font-family:'Space Grotesk';background:var(--panel);border:1px solid var(--panel-border);color:#cdd3f0;transition:transform .2s,border-color .2s,box-shadow .2s}
+.achip .led{width:9px;height:9px;border-radius:50%;animation:pulse 1.6s infinite}
+.achip:hover{transform:translateY(-3px)}
+.achip.c1{border-color:rgba(124,92,255,.4)}.achip.c1 .led{background:#7c5cff;box-shadow:0 0 10px #7c5cff}
+.achip.c2{border-color:rgba(34,211,238,.4)}.achip.c2 .led{background:#22d3ee;box-shadow:0 0 10px #22d3ee}
+.achip.c3{border-color:rgba(255,92,138,.4)}.achip.c3 .led{background:#ff5c8a;box-shadow:0 0 10px #ff5c8a}
+.achip.c4{border-color:rgba(52,232,158,.4)}.achip.c4 .led{background:#34e89e;box-shadow:0 0 10px #34e89e}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}.ticker .track{animation:none}}
 </style>
 </head>
 <body>
+
+<!-- clapperboard loader -->
+<div class="loader" id="loader">
+  <div class="clap">
+    <div class="top"></div>
+    <div class="board">
+      <div class="t1">SCENE 01 · TAKE 1</div>
+      <div class="t2">DIRECTING THE WORLD</div>
+      <div class="t3">CAMERA ROLLING · ✦ SOUND ✦</div>
+    </div>
+  </div>
+  <div class="lsub">▶ TAP TO START THE SHOW</div>
+</div>
+
+<!-- viewfinder reticle cursor -->
+<div class="reticle" id="reticle">
+  <span class="rc tl"></span><span class="rc tr"></span><span class="rc bl"></span><span class="rc br"></span>
+  <span class="dot"></span>
+</div>
 
 <canvas id="bg-canvas"></canvas>
 <div class="bg-aurora"></div>
@@ -217,7 +321,7 @@ footer p{color:var(--dim);font-size:13px}
     <div class="nav-links">
       <a href="#abstract">Abstract</a>
       <a href="#method">Method</a>
-      <a href="#control">Control</a>
+      <a href="#control">Agents</a>
       <a href="#results">Results</a>
       <a href="#dataset">Dataset</a>
       <a href="#bibtex">Citation</a>
@@ -229,7 +333,7 @@ footer p{color:var(--dim);font-size:13px}
 <header class="hero">
   <div class="wrap">
     <div class="badge"><span class="dot"></span> IEEE Transactions on Multimedia · 2026</div>
-    <h1>Directing <span class="grad">the World</span></h1>
+    <h1>Directing <span class="grad glitch" data-text="the World">the World</span></h1>
     <p class="venue">Fast Autoregressive Video Generation with <b>Compositional Human-Camera Control</b></p>
 
     <div class="authors">
@@ -260,6 +364,28 @@ footer p{color:var(--dim);font-size:13px}
     <p class="teaser-cap">Given an input image, an <b>SMPL human-motion sequence</b>, and a prescribed <b>camera trajectory</b>, Directing the World generates stable 15–20s long-horizon world-model videos — consistent human motion <i>and</i> coherent camera-based world exploration.</p>
   </div>
 </header>
+
+<!-- director marquee ticker -->
+<div class="ticker">
+  <div class="track">
+    <span class="it"><span class="led" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#7c5cff;box-shadow:0 0 8px #7c5cff"></span><b>AUTOREGRESSIVE</b> WORLD MODEL</span><span class="sep">✦</span>
+    <span class="it"><em>SMPL</em> HUMAN-MOTION CONTROL</span><span class="sep">✦</span>
+    <span class="it"><b>Plücker-ray</b> CAMERA TRAJECTORIES</span><span class="sep">✦</span>
+    <span class="it"><em>t-guided</em> DYNAMIC PROJECTION</span><span class="sep">✦</span>
+    <span class="it"><b>Fast–Slow</b> MEMORY TRAINING</span><span class="sep">✦</span>
+    <span class="it">15–20s LONG-HORIZON ROLLOUTS</span><span class="sep">✦</span>
+    <span class="it"><b>50K</b> CURATED CLIPS</span><span class="sep">✦</span>
+    <span class="it"><em>SCENE 01 · TAKE 1 ·</em> LIGHTS CAMERA ACTION</span><span class="sep">✦</span>
+    <span class="it"><span class="led" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#7c5cff;box-shadow:0 0 8px #7c5cff"></span><b>AUTOREGRESSIVE</b> WORLD MODEL</span><span class="sep">✦</span>
+    <span class="it"><em>SMPL</em> HUMAN-MOTION CONTROL</span><span class="sep">✦</span>
+    <span class="it"><b>Plücker-ray</b> CAMERA TRAJECTORIES</span><span class="sep">✦</span>
+    <span class="it"><em>t-guided</em> DYNAMIC PROJECTION</span><span class="sep">✦</span>
+    <span class="it"><b>Fast–Slow</b> MEMORY TRAINING</span><span class="sep">✦</span>
+    <span class="it">15–20s LONG-HORIZON ROLLOUTS</span><span class="sep">✦</span>
+    <span class="it"><b>50K</b> CURATED CLIPS</span><span class="sep">✦</span>
+    <span class="it"><em>SCENE 01 · TAKE 1 ·</em> LIGHTS CAMERA ACTION</span><span class="sep">✦</span>
+  </div>
+</div>
 
 <!-- ABSTRACT -->
 <section id="abstract">
@@ -343,35 +469,44 @@ footer p{color:var(--dim);font-size:13px}
   </div>
 </section>
 
-<!-- HUMAN MOTION CONTROL (paired SMPL) -->
+<!-- MULTI-AGENT CONTROL -->
 <section id="control">
   <div class="wrap">
     <div class="sec-head reveal">
-      <span class="sec-eyebrow">03 / Human Motion Control</span>
-      <h2>SMPL in, <span class="grad">faithful motion out</span></h2>
-      <p>Each clip below shows the rendered <b style="color:var(--grad3)">SMPL motion condition</b> (top bar) and the corresponding <b style="color:var(--grad2)">generated video</b> (bottom bar). The t-guided projection follows the input motion precisely while preserving visual realism.</p>
+      <span class="sec-eyebrow">03 / Multi-Agent World</span>
+      <h2>Cue the cast: <span class="grad">multi-agent world control</span></h2>
+      <p>You don't just generate a clip — you <b>direct</b> a world. Directing the World lets you choreograph multiple human agents simultaneously, each driven by its own SMPL motion script, all moving through one persistent, camera-explored scene.</p>
     </div>
+
+    <div class="agentchips reveal">
+      <span class="achip c1"><span class="led"></span>Agent A · Speaker</span>
+      <span class="achip c2"><span class="led"></span>Agent B · Listener</span>
+      <span class="achip c3"><span class="led"></span>Agent C · Background</span>
+      <span class="achip c4"><span class="led"></span>+ Free-roam Camera</span>
+    </div>
+
+    <p style="text-align:center;color:var(--muted);max-width:680px;margin:0 auto 36px;font-size:14.5px">Each clip below shows the rendered <b style="color:var(--grad3)">SMPL motion script</b> (the actor's blocking) feeding the <b style="color:var(--grad2)">generated world</b>. Hover to focus your lens — the t-guided projection keeps every actor on mark while the world stays coherent.</p>
 
     <div class="pairs">
       <div class="pcard reveal">
         <video autoplay loop muted playsinline><source src="assets/pair_a_smpl.mp4" type="video/mp4"></video>
         <video autoplay loop muted playsinline><source src="assets/pair_a.mp4" type="video/mp4"></video>
-        <div class="pbar"><span class="smpl-tag">▲ SMPL condition</span><span class="out-tag">▼ Generated</span></div>
+        <div class="pbar"><span class="smpl-tag">▲ SMPL script</span><span class="out-tag">▼ Generated world</span></div>
       </div>
       <div class="pcard reveal d1">
         <video autoplay loop muted playsinline><source src="assets/pair_b_smpl.mp4" type="video/mp4"></video>
         <video autoplay loop muted playsinline><source src="assets/pair_b.mp4" type="video/mp4"></video>
-        <div class="pbar"><span class="smpl-tag">▲ SMPL condition</span><span class="out-tag">▼ Generated</span></div>
+        <div class="pbar"><span class="smpl-tag">▲ SMPL script</span><span class="out-tag">▼ Generated world</span></div>
       </div>
       <div class="pcard reveal d2">
         <video autoplay loop muted playsinline><source src="assets/pair_c_smpl.mp4" type="video/mp4"></video>
         <video autoplay loop muted playsinline><source src="assets/pair_c.mp4" type="video/mp4"></video>
-        <div class="pbar"><span class="smpl-tag">▲ SMPL condition</span><span class="out-tag">▼ Generated</span></div>
+        <div class="pbar"><span class="smpl-tag">▲ SMPL script</span><span class="out-tag">▼ Generated world</span></div>
       </div>
       <div class="pcard reveal d3">
         <video autoplay loop muted playsinline><source src="assets/pair_d_smpl.mp4" type="video/mp4"></video>
         <video autoplay loop muted playsinline><source src="assets/pair_d.mp4" type="video/mp4"></video>
-        <div class="pbar"><span class="smpl-tag">▲ SMPL condition</span><span class="out-tag">▼ Generated</span></div>
+        <div class="pbar"><span class="smpl-tag">▲ SMPL script</span><span class="out-tag">▼ Generated world</span></div>
       </div>
     </div>
   </div>
@@ -496,6 +631,10 @@ footer p{color:var(--dim);font-size:13px}
   </div>
 </footer>
 
+<!-- film-strip scroll scrubber -->
+<div class="film-timeline"><div class="film-fill" id="film-fill"></div><div class="film-playhead" id="film-head"></div></div>
+<div class="tl-label" id="tl-label">▶ 00:00:00</div>
+
 <script>
 (function(){
   const c=document.getElementById('bg-canvas'),x=c.getContext('2d');
@@ -565,6 +704,37 @@ addEventListener('scroll',()=>{document.querySelector('nav').style.background=sc
   function fmt(total){const fps=24;const ff=total%fps;const s=Math.floor(total/fps)%60;const m=Math.floor(total/60/fps)%60;const h=Math.floor(total/60/60/fps);return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')+':'+String(ff).padStart(2,'0');}
   function tick(){f++;tc.textContent=fmt(f);}
   set=setInterval(tick,1000/24);
+})();
+
+/* ---------- film-strip scroll scrubber ---------- */
+(function(){
+  const fill=document.getElementById('film-fill'),head=document.getElementById('film-head'),lbl=document.getElementById('tl-label');
+  function fmt(p){const fps=24;const total=Math.round(p*fps*240);const ff=total%fps;const s=Math.floor(total/fps)%60;const m=Math.floor(total/60/fps);return '▶ '+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')+':'+String(ff).padStart(2,'0');}
+  function upd(){const h=document.documentElement;const max=h.scrollHeight-h.clientHeight;const p=max>0?h.scrollTop/max:0;fill.style.width=(p*100)+'%';head.style.left=(p*100)+'%';lbl.textContent=fmt(p);}
+  addEventListener('scroll',upd,{passive:true});addEventListener('resize',upd);upd();
+})();
+
+/* ---------- clapperboard loader ---------- */
+(function(){
+  const ld=document.getElementById('loader');if(!ld)return;
+  function done(){ld.classList.add('gone');setTimeout(()=>ld.style.display='none',700);}
+  ld.addEventListener('click',done);
+  /* auto-dismiss fallback */
+  setTimeout(done,2600);
+})();
+
+/* ---------- viewfinder reticle cursor (desktop only) ---------- */
+(function(){
+  if(matchMedia('(hover:none)').matches)return;
+  const r=document.getElementById('reticle');if(!r)return;
+  document.body.classList.add('reticle-on');
+  let cx=innerWidth/2,cy=innerHeight/2,tx=cx,ty=cy;
+  addEventListener('mousemove',e=>{tx=e.clientX;ty=e.clientY;});
+  function loop(){cx+=(tx-cx)*.22;cy+=(ty-cy)*.22;r.style.transform='translate('+cx+'px,'+cy+'px)';requestAnimationFrame(loop);}
+  loop();r.classList.add('on');
+  /* grow over interactive things */
+  document.addEventListener('mouseover',e=>{if(e.target.closest('a,button,.pcard,.gcard,.mcard,.stat,.ptab,.achip'))r.classList.add('hot');});
+  document.addEventListener('mouseout',e=>{if(e.target.closest('a,button,.pcard,.gcard,.mcard,.stat,.ptab,.achip'))r.classList.remove('hot');});
 })();
 </script>
 </body>
