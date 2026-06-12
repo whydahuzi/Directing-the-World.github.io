@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Directing the World: Fast Autoregressive Video Generation with Compositional Human-Camera Control</title>
+    <meta name="description" content="Directing the World: a fast autoregressive framework for controllable world-model video generation with compositional human-motion and camera-trajectory control.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Noto+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #ffffff;
+            --text: #222;
+            --muted: #666;
+            --link: #0b6bbf;
+            --link-hover: #074a87;
+            --rule: #e3e3e3;
+            --card-bg: #fafafa;
+            --code-bg: #f6f8fa;
+            --accent: #2c3e50;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Noto Sans', 'Roboto', Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 920px;
+            margin: 0 auto;
+            padding: 0 28px 80px;
+        }
+
+        /* Title */
+        .paper-title {
+            font-size: 34px;
+            line-height: 1.25;
+            font-weight: 700;
+            text-align: center;
+            margin: 56px 0 10px;
+            letter-spacing: -0.01em;
+        }
+
+        .venue {
+            text-align: center;
+            font-size: 18px;
+            color: var(--muted);
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+
+        /* Authors */
+        .authors {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 6px;
+            line-height: 1.9;
+        }
+        .authors a { color: var(--link); text-decoration: none; font-weight: 500; }
+        .authors a:hover { color: var(--link-hover); text-decoration: underline; }
+        .author-note { font-size: 12px; color: var(--muted); vertical-align: super; }
+
+        .affiliation {
+            text-align: center;
+            font-size: 15px;
+            color: var(--muted);
+            margin-bottom: 40px;
+        }
+        .affiliation a { color: var(--link); text-decoration: none; }
+
+        /* Buttons */
+        .btn-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 48px;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 22px;
+            border-radius: 999px;
+            background: var(--accent);
+            color: #fff;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+            transition: transform .12s ease, background .12s ease;
+            border: 1px solid transparent;
+        }
+        .btn:hover { background: #1a2733; color: #fff; transform: translateY(-1px); }
+        .btn.ghost { background: #fff; color: var(--accent); border-color: #c7d2dc; }
+        .btn.ghost:hover { background: #eef2f6; color: var(--accent); }
+
+        /* Teaser */
+        .teaser {
+            margin: 0 auto 56px;
+            max-width: 860px;
+            background: var(--card-bg);
+            border: 1px solid var(--rule);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .teaser .placeholder {
+            aspect-ratio: 16 / 9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted);
+            background: linear-gradient(135deg, #eef3f7 0%, #e2e8ef 100%);
+            text-align: center;
+            padding: 24px;
+            gap: 6px;
+        }
+        .placeholder .ph-icon { font-size: 40px; opacity: .6; }
+        .placeholder .ph-sub { font-size: 13px; }
+        .teaser-caption {
+            padding: 14px 20px;
+            font-size: 14px;
+            color: #444;
+            text-align: justify;
+        }
+        .teaser-caption strong { color: var(--accent); }
+
+        video.teaser-video { display: block; width: 100%; }
+
+        /* Section */
+        section { margin-bottom: 52px; }
+        h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0 0 18px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--rule);
+            color: var(--accent);
+        }
+        p { margin: 0 0 14px; text-align: justify; }
+
+        .abstract { font-size: 16px; }
+
+        /* Feature cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 18px;
+            margin-top: 8px;
+        }
+        .feature {
+            background: var(--card-bg);
+            border: 1px solid var(--rule);
+            border-radius: 10px;
+            padding: 18px 20px;
+        }
+        .feature h3 {
+            margin: 0 0 8px;
+            font-size: 16px;
+            color: var(--accent);
+        }
+        .feature p { font-size: 14px; margin: 0; color: #444; }
+
+        /* Results media grid */
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 18px;
+            margin-top: 8px;
+        }
+        .media-card {
+            background: var(--card-bg);
+            border: 1px solid var(--rule);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .media-card .media-box {
+            aspect-ratio: 16 / 9;
+            background: linear-gradient(135deg, #eef3f7 0%, #e2e8ef 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted);
+            font-size: 13px;
+        }
+        .media-card video, .media-card img { width: 100%; display: block; }
+        .media-card .cap { padding: 10px 14px; font-size: 13px; color: #555; }
+
+        /* Table */
+        .table-wrap { overflow-x: auto; }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+        th, td {
+            border: 1px solid var(--rule);
+            padding: 8px 12px;
+            text-align: center;
+        }
+        thead th { background: #f0f3f6; color: var(--accent); font-weight: 600; }
+        tbody td:first-child { text-align: left; }
+        td.best { background: #ffe3e3; font-weight: 600; }
+        td.second { background: #fff3d6; }
+        .table-note { font-size: 13px; color: var(--muted); margin-top: 10px; }
+
+        /* BibTeX */
+        pre.bibtex {
+            background: var(--code-bg);
+            border: 1px solid var(--rule);
+            border-radius: 8px;
+            padding: 16px 18px;
+            font-size: 13.5px;
+            overflow-x: auto;
+            font-family: 'Roboto Mono', 'Courier New', monospace;
+            line-height: 1.55;
+        }
+        .copy-btn {
+            float: right;
+            font-size: 12px;
+            background: #fff;
+            border: 1px solid var(--rule);
+            border-radius: 6px;
+            padding: 4px 10px;
+            cursor: pointer;
+            color: var(--muted);
+        }
+        .copy-btn:hover { color: var(--accent); border-color: #b9c4cf; }
+
+        /* Citation footer */
+        .footer {
+            text-align: center;
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 56px;
+            padding-top: 24px;
+            border-top: 1px solid var(--rule);
+        }
+
+        @media (max-width: 600px) {
+            .paper-title { font-size: 25px; }
+            .authors { font-size: 15px; }
+            .btn { padding: 9px 16px; font-size: 14px; }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <!-- Title -->
+    <h1 class="paper-title">
+        Directing the World: Fast Autoregressive Video Generation with Compositional Human-Camera Control
+    </h1>
+    <div class="venue">IEEE Transactions on Multimedia (TMM), 2026</div>
+
+    <!-- Authors -->
+    <div class="authors">
+        <a href="#">Haoyuan Wang</a><sup class="author-note">*</sup>,
+        <a href="#">Yabo Chen</a><sup class="author-note">*</sup>,
+        <a href="#">Haibin Huang</a>,
+        <a href="#">Chi Zhang</a>,
+        <a href="#">Xuelong Li</a>, <span style="color:var(--muted);font-size:14px;">Fellow, IEEE</span>
+    </div>
+    <div class="affiliation">
+        Institute of Artificial Intelligence, China Telecom (TeleAI)<br>
+        <span style="font-size:13px;"><sup>*</sup> Equal contribution. Corresponding author: Xuelong Li.</span>
+    </div>
+
+    <!-- Buttons -->
+    <div class="btn-row">
+        <a class="btn" href="#">📄 Paper (PDF)</a>
+        <a class="btn ghost" href="#">💻 Code & Models</a>
+        <a class="btn ghost" href="#bibtex">📚 BibTeX</a>
+        <a class="btn ghost" href="#dataset">🗂️ Dataset</a>
+    </div>
+
+    <!-- Teaser -->
+    <div class="teaser">
+        <!-- Replace the <div class="placeholder"> below with a <video> or <img> of your teaser. Example:
+        <video class="teaser-video" autoplay loop muted playsinline poster="assets/teaser.jpg">
+            <source src="assets/teaser.mp4" type="video/mp4">
+        </video>
+        -->
+        <div class="placeholder">
+            <div class="ph-icon">🎬</div>
+            <div><strong>Teaser Video / GIF</strong></div>
+            <div class="ph-sub">Drop <code>assets/teaser.mp4</code> or <code>assets/teaser.gif</code> here</div>
+        </div>
+        <div class="teaser-caption">
+            Given an input image, a human-motion sequence (SMPL), and a prescribed camera trajectory,
+            <strong>Directing the World</strong> generates stable long-horizon (15–20s) world-model videos with
+            consistent human-motion control and coherent camera-based world exploration — where prior methods
+            (Self-Forcing, Uni3C, Lingbot-World) suffer from memory degradation, scene inconsistency, or uncontrolled motion.
+        </div>
+    </div>
+
+    <!-- Abstract -->
+    <section id="abstract">
+        <h2>Abstract</h2>
+        <p class="abstract">
+            Building interactive world models requires not only generating visually realistic videos, but also
+            simulating controllable real-world dynamics over long temporal horizons. Autoregressive video
+            generation provides a scalable foundation for such dynamic world simulation, where future
+            observations are progressively synthesized from previously generated context. However, maintaining
+            temporal stability over extended rollouts remains fundamentally challenging, as small prediction
+            errors can accumulate and quickly degrade long-horizon generation. This challenge becomes even more
+            pronounced when the model must support heterogeneous controls such as human motion and camera
+            trajectories, since different control signals may interfere with each other and destabilize the
+            pretrained video prior.
+        </p>
+        <p class="abstract">
+            To address these challenges, we present <strong>Directing the World</strong>, a fast autoregressive
+            framework for controllable world-model video generation with compositional human-motion and
+            camera-trajectory control. Our key insight is to decouple the learning of dynamic control factors
+            while preserving a unified autoregressive video prior. We introduce a <strong>Fast–Slow Memory</strong>
+            training strategy that stabilizes long-horizon rollout learning and improves convergence during
+            controllable post-training. To enable accurate and temporally smooth human-motion control, we design a
+            <strong>t-guided Dynamic Projection</strong> mechanism together with a refined
+            <strong>Motion-CFG</strong> strategy, which inject motion conditions adaptively across denoising stages
+            and improve motion alignment without sacrificing visual fidelity. After acquiring a robust human-motion
+            prior, we introduce camera-trajectory control in a second stage, allowing the model to compose human
+            dynamics with camera motion for controllable world exploration.
+        </p>
+    </section>
+
+    <!-- Method -->
+    <section id="method">
+        <h2>Method</h2>
+        <p>
+            We propose a two-stage autoregressive ControlNet-based framework following a
+            <em>"decouple then integrate"</em> principle: we first learn human-motion control under relatively
+            static camera settings, then progressively introduce camera-trajectory control on top of the acquired
+            motion prior. The framework contains four key components:
+        </p>
+        <div class="feature-grid">
+            <div class="feature">
+                <h3>① MMPL Backbone</h3>
+                <p>A long-horizon autoregressive backbone (Plan-then-Populate) that maintains long-range temporal
+                   consistency and world memory across extended rollouts.</p>
+            </div>
+            <div class="feature">
+                <h3>② Human Motion Control</h3>
+                <p>A fine-grained SMPL-based motion branch with a timestep-guided projection mechanism that adapts
+                   geometric motion conditions to timestep-dependent denoising latents. Naturally supports
+                   multi-person control.</p>
+            </div>
+            <div class="feature">
+                <h3>③ Causal-Aligned Camera Control</h3>
+                <p>A camera-control pathway that decouples global trajectory encoding from block-local feature
+                   injection, aligning global camera features with block-wise autoregressive generation.</p>
+            </div>
+            <div class="feature">
+                <h3>④ Fast–Slow Memory Training</h3>
+                <p>A differential learning-rate strategy that keeps pretrained self/cross-attention layers stable
+                   (slow memory) while letting new control modules adapt rapidly (fast memory).</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Results -->
+    <section id="results">
+        <h2>Results</h2>
+        <p>
+            We evaluate on APRIL-AIGC/UltraVideo-Long under motion-only, camera-only, and joint motion-camera
+            control settings. Among joint-control methods, Directing the World achieves the best overall score,
+            with strong temporal flickering, motion smoothness, motion error, and camera-control (ATE/RPE/RRE)
+            performance.
+        </p>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th rowspan="2">Method</th>
+                        <th colspan="3">Control</th>
+                        <th rowspan="2">Overall Score</th>
+                        <th colspan="2">Temporal</th>
+                        <th>Motion</th>
+                        <th colspan="3">Camera</th>
+                    </tr>
+                    <tr>
+                        <th>Refined</th><th>Motion</th><th>Camera</th>
+                        <th>Consist</th><th>Quality</th>
+                        <th>Motion Err.</th>
+                        <th>ATE</th><th>RPE</th><th>RRE</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>FunCamera</td>
+                        <td></td><td></td><td>✓</td>
+                        <td>3.401</td><td>86.59</td><td>59.77</td>
+                        <td>0.213</td><td>0.601</td><td>0.101</td><td>0.970</td>
+                    </tr>
+                    <tr>
+                        <td>FunMotion</td>
+                        <td></td><td>✓</td><td></td>
+                        <td>3.445</td><td>91.76</td><td>62.52</td>
+                        <td>0.184</td><td>—</td><td>—</td><td>—</td>
+                    </tr>
+                    <tr>
+                        <td>WanMove</td>
+                        <td></td><td>✓</td><td>✓</td>
+                        <td>3.401</td><td>89.67</td><td class="best">64.23</td>
+                        <td>0.194</td><td>0.669</td><td>0.077</td><td>0.685</td>
+                    </tr>
+                    <tr>
+                        <td>Uni3C</td>
+                        <td>✓</td><td>✓</td><td>✓</td>
+                        <td>3.445</td><td class="second">88.65</td><td>56.07</td>
+                        <td class="best">0.151</td>
+                        <td>0.482</td><td class="best">0.063</td><td>0.722</td>
+                    </tr>
+                    <tr style="background:#f7fbff;">
+                        <td><strong>Ours</strong></td>
+                        <td>✓</td><td>✓</td><td>✓</td>
+                        <td class="best">3.868</td><td class="best">90.25</td><td class="second">62.98</td>
+                        <td class="second">0.161</td>
+                        <td class="second">0.532</td><td class="second">0.070</td><td class="best">0.349</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="table-note">
+            "Refined" indicates fine-grained controllability beyond coarse trajectory-level guidance.
+            <span style="background:#ffe3e3;padding:1px 6px;border-radius:4px;">Red</span> = best,
+            <span style="background:#fff3d6;padding:1px 6px;border-radius:4px;">Yellow</span> = second-best.
+            Metrics omitted for methods that do not support the corresponding control conditions.
+        </p>
+
+        <!-- Qualitative / video gallery placeholders -->
+        <div class="media-grid" style="margin-top:28px;">
+            <div class="media-card">
+                <div class="media-box">📹 Result 1 (replace with <code>assets/res1.mp4</code>)</div>
+                <div class="cap">Joint human-motion + camera control over a long horizon.</div>
+            </div>
+            <div class="media-card">
+                <div class="media-box">📹 Result 2 (replace with <code>assets/res2.mp4</code>)</div>
+                <div class="cap">Multi-person motion control in a shared scene.</div>
+            </div>
+            <div class="media-card">
+                <div class="media-box">📹 Result 3 (replace with <code>assets/res3.mp4</code>)</div>
+                <div class="cap">Camera-based world exploration with consistent subject.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dataset -->
+    <section id="dataset">
+        <h2>Dataset</h2>
+        <p>
+            We construct a large-scale controllable world-model dataset from 20M publicly available iStock videos
+            with synchronized video, text, human-motion, and camera-trajectory annotations. A multi-stage filtering
+            and alignment pipeline (aesthetic & quality filter, motion-aware filter, SfM camera assessment,
+            SMPL recovery, unified-latent-space alignment) yields roughly <strong>50k high-quality video-condition
+            pairs</strong>, organized into:
+        </p>
+        <ul style="line-height:1.9;">
+            <li><strong>Motion-centric subset (~20k)</strong> — high human motion, low camera motion; for Stage-I human-motion control.</li>
+            <li><strong>Camera-centric subset (~30k)</strong> — high human motion, high camera motion; for Stage-II world-exploration camera control.</li>
+        </ul>
+        <p>Curated datasets will be released to support future research.</p>
+    </section>
+
+    <!-- BibTeX -->
+    <section id="bibtex">
+        <h2>Citation</h2>
+        <button class="copy-btn" onclick="copyBib()">Copy</button>
+        <pre class="bibtex" id="bib-text">@article{wang2026directing,
+  title   = {Directing the World: Fast Autoregressive Video Generation with Compositional Human-Camera Control},
+  author  = {Wang, Haoyuan and Chen, Yabo and Huang, Haibin and Zhang, Chi and Li, Xuelong},
+  journal = {IEEE Transactions on Multimedia (TMM)},
+  volume  = {XX},
+  number  = {XX},
+  year    = {2026}
+}</pre>
+    </section>
+
+    <!-- Footer -->
+    <div class="footer">
+        © 2026 Directing the World · Institute of Artificial Intelligence, China Telecom (TeleAI)<br>
+        Project page template · based on the TMM 2026 manuscript.
+    </div>
+
+</div>
+
+<script>
+    function copyBib() {
+        const text = document.getElementById('bib-text').innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            const btn = document.querySelector('.copy-btn');
+            const old = btn.innerText;
+            btn.innerText = 'Copied!';
+            setTimeout(() => { btn.innerText = old; }, 1600);
+        });
+    }
+</script>
+</body>
+</html>
