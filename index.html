@@ -1040,8 +1040,8 @@ addEventListener('scroll',()=>{document.querySelector('nav').style.background=sc
     /* world-space body proportions. Hip height is fixed (no vertical bob)
        so the figure walks without bouncing; legs are solved by IK so the
        feet plant flat on the ground plane (y=0). */
-    const TL=0.48, SL=0.46;                       /* thigh / shin */
-    const rootY=0.90*a.r;                          /* fixed pelvis height */
+    const TL=0.30, SL=0.29;                       /* thigh / shin */
+    const rootY=0.56*a.r;                          /* fixed pelvis height */
     /* joint angles from a sinusoidal walk gait */
     const shA=Math.sin(cyc)*0.5*mv, shB=Math.sin(cyc+Math.PI)*0.5*mv;  /* shoulders swing opposite */
     const hpA=Math.sin(cyc)*0.30*mv, hpB=Math.sin(cyc+Math.PI)*0.30*mv;/* hip stride (z) */
@@ -1064,17 +1064,17 @@ addEventListener('scroll',()=>{document.querySelector('nav').style.background=sc
     }
     const P={};
     P.pelvis={x:wx,y:rootY,z:wz};
-    P.neck ={x:wx+lean*0.10,y:rootY+0.50,z:wz+lean*0.04};
-    P.head  ={x:P.neck.x+lean*0.05,y:P.neck.y+0.22,z:P.neck.z};
-    P.lSh={x:P.neck.x-0.20,y:P.neck.y-0.05,z:P.neck.z};
-    P.rSh={x:P.neck.x+0.20,y:P.neck.y-0.05,z:P.neck.z};
-    const lHipX=wx-0.09, rHipX=wx+0.09;
+    P.neck ={x:wx+lean*0.07,y:rootY+0.32,z:wz+lean*0.03};
+    P.head  ={x:P.neck.x+lean*0.03,y:P.neck.y+0.14,z:P.neck.z};
+    P.lSh={x:P.neck.x-0.13,y:P.neck.y-0.03,z:P.neck.z};
+    P.rSh={x:P.neck.x+0.13,y:P.neck.y-0.03,z:P.neck.z};
+    const lHipX=wx-0.06, rHipX=wx+0.06;
 
     /* arms: shoulder -> elbow -> hand (angle in sagittal plane) */
-    P.lEl={x:P.lSh.x+Math.sin(shA)*0.18, y:P.lSh.y-Math.cos(shA)*0.20, z:P.lSh.z+Math.cos(shA)*0.16};
-    P.rEl={x:P.rSh.x+Math.sin(shB)*0.18, y:P.rSh.y-Math.cos(shB)*0.20, z:P.rSh.z+Math.cos(shB)*0.16};
-    P.lHd={x:P.lEl.x+Math.sin(shA+elb*0.4)*0.16, y:P.lEl.y-Math.cos(shA+elb*0.4)*0.18, z:P.lEl.z+Math.cos(shA+elb*0.4)*0.14};
-    P.rHd={x:P.rEl.x+Math.sin(shB-elb*0.4)*0.16, y:P.rEl.y-Math.cos(shB-elb*0.4)*0.18, z:P.rEl.z+Math.cos(shB-elb*0.4)*0.14};
+    P.lEl={x:P.lSh.x+Math.sin(shA)*0.12, y:P.lSh.y-Math.cos(shA)*0.13, z:P.lSh.z+Math.cos(shA)*0.10};
+    P.rEl={x:P.rSh.x+Math.sin(shB)*0.12, y:P.rSh.y-Math.cos(shB)*0.13, z:P.rSh.z+Math.cos(shB)*0.10};
+    P.lHd={x:P.lEl.x+Math.sin(shA+elb*0.4)*0.10, y:P.lEl.y-Math.cos(shA+elb*0.4)*0.12, z:P.lEl.z+Math.cos(shA+elb*0.4)*0.09};
+    P.rHd={x:P.rEl.x+Math.sin(shB-elb*0.4)*0.10, y:P.rEl.y-Math.cos(shB-elb*0.4)*0.12, z:P.rEl.z+Math.cos(shB-elb*0.4)*0.09};
     /* legs via IK — feet plant on the ground, no bounce */
     const lLeg=legIK(lHipX,wz,hpA,Math.sin(cyc)*0.05*mv);
     const rLeg=legIK(rHipX,wz,hpB,Math.sin(cyc+Math.PI)*0.05*mv);
@@ -1088,7 +1088,7 @@ addEventListener('scroll',()=>{document.querySelector('nav').style.background=sc
     /* shadow on the ground (z-flat ellipse at y=0) */
     const sh=project(wx,0,wz,vp,scale);
     ctx.save();ctx.fillStyle='rgba(0,0,0,.45)';
-    ctx.beginPath();ctx.ellipse(sh.sx,sh.sy+2,16*a.r*sh.s*DPR,5*a.r*sh.s*DPR,0,0,6.283);ctx.fill();ctx.restore();
+    ctx.beginPath();ctx.ellipse(sh.sx,sh.sy+2,10*a.r*sh.s*DPR,3.2*a.r*sh.s*DPR,0,0,6.283);ctx.fill();ctx.restore();
 
     /* skeleton bones */
     const c=a.col;
@@ -1104,13 +1104,13 @@ addEventListener('scroll',()=>{document.querySelector('nav').style.background=sc
 
     /* joints + head */
     ctx.fillStyle='rgba('+c+',1)';
-    const jr=2.6*DPR*Math.max(.4,S2.pelvis.s);
+    const jr=2.0*DPR*Math.max(.4,S2.pelvis.s);
     ['lSh','rSh','lEl','rEl','lHd','rHd','lHip','rHip','lKn','rKn'].forEach(k=>joint(S2[k],jr));
     joint(S2.pelvis,jr*1.1);
-    ctx.beginPath();ctx.arc(S2.head.sx,S2.head.sy,5.2*a.r*DPR*Math.max(.4,S2.head.s),0,6.283);ctx.fill();
+    ctx.beginPath();ctx.arc(S2.head.sx,S2.head.sy,4.0*a.r*DPR*Math.max(.4,S2.head.s),0,6.283);ctx.fill();
 
     /* ground glow ring under the agent */
-    ctx.beginPath();ctx.ellipse(sh.sx,sh.sy,24*a.r*sh.s*DPR,7*a.r*sh.s*DPR,0,0,6.283);
+    ctx.beginPath();ctx.ellipse(sh.sx,sh.sy,16*a.r*sh.s*DPR,4.5*a.r*sh.s*DPR,0,0,6.283);
     ctx.strokeStyle='rgba('+c+',0.22)';ctx.lineWidth=1*DPR;ctx.stroke();
   }
 
@@ -1221,7 +1221,7 @@ addEventListener('scroll',()=>{document.querySelector('nav').style.background=sc
     ctx.beginPath();ctx.arc(cp[0],cp[1],5*DPR,0,6.283);ctx.fillStyle='#ff6b4a';ctx.shadowBlur=14;ctx.shadowColor='#ff6b4a';ctx.fill();ctx.shadowBlur=0;
 
     /* ---- SMPL agents on the point-cloud floor ---- */
-    const scale=Math.min(W,H)*0.62;
+    const scale=Math.min(W,H)*0.40;
     const agentVp={x:vp.x,y:vp.y+H*0.16};
     const shown=S.multi?agents.length:1;
     /* sort by z so nearer agents draw last */
