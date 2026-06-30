@@ -767,6 +767,45 @@ addEventListener('scroll',()=>{document.querySelector('nav').style.background=sc
 	  });
 	  wall.addEventListener('mouseleave',()=>{wall.style.transform='perspective(1100px) rotateX(0) rotateY(0)';});
 	})();
+
+	/* ---------- pair phase-lock: keep generated clip in sync with its SMPL script ---------- */
+	(function(){
+	  const cards=document.querySelectorAll('.pairs .pcard');if(!cards.length)return;
+	  /* the two source files of every pair share one timeline (lag=0), so the only
+	     thing to fix is independent-loop drift: drive the generated video's clock
+	     from the SMPL video each frame, correcting only when drift is audible-scale. */
+	  const TOL=0.06; /* seconds of tolerated drift before a hard reseek */
+	  const pairs=[];
+	  cards.forEach(card=>{
+	    const vids=card.querySelectorAll('video');
+	    if(vids.length<2)return;
+	    const master=vids[0],slave=vids[1]; /* [0]=SMPL script, [1]=generated world */
+	    pairs.push({master,slave});
+	    /* once both can seek, restart them together for a clean phase start */
+	    const kick=()=>{try{master.currentTime=0;slave.currentTime=0;}catch(_){}};
+	    if(master.readyState>=1&&slave.readyState>=1)kick();
+	    else{master.addEventListener('loadedmetadata',kick,{once:true});}
+	  });
+	  function loop(){
+	    for(const p of pairs){
+	      const m=p.master,s=p.slave;
+	      if(m.paused||s.paused||!m.duration||!s.duration)continue;
+	      const d=s.duration;
+	      let diff=s.currentTime-m.currentTime;
+	      /* account for either video having wrapped its loop */
+	      if(diff>d/2)diff-=d;else if(diff<-d/2)diff+=d;
+	      if(Math.abs(diff)>TOL){
+	        try{s.currentTime=m.currentTime;}catch(_){}
+	        s.playbackRate=1;
+	      }else{
+	        /* nudge rate to ease out tiny drift without visible jumps */
+	        s.playbackRate=Math.max(0.92,Math.min(1.08,1-diff*1.5));
+	      }
+	    }
+	    requestAnimationFrame(loop);
+	  }
+	  requestAnimationFrame(loop);
+	})();
 </script>
 </body>
 </html>
