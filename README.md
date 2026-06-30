@@ -9,7 +9,7 @@
 
 <p align="center">
   <em>Haoyuan Wang*&nbsp;&nbsp;·&nbsp;&nbsp;Yabo Chen*&nbsp;&nbsp;·&nbsp;&nbsp;Haibin Huang&nbsp;&nbsp;·&nbsp;&nbsp;Chi Zhang&nbsp;&nbsp;·&nbsp;&nbsp;Xuelong Li (corresponding)</em>
-  <br><sub>Institute of Artificial Intelligence, China Telecom (TeleAI) · IEEE Transactions on Multimedia (TMM), 2026</sub>
+  <br><sub>Institute of Artificial Intelligence, China Telecom (TeleAI)</sub>
   <br><sub>* Equal contribution</sub>
 </p>
 
@@ -159,7 +159,7 @@ If you find this work useful, please cite:
   title   = {Directing the World: Fast Autoregressive Video Generation with
              Compositional Human-Camera Control},
   author  = {Wang, Haoyuan and Chen, Yabo and Huang, Haibin and Zhang, Chi and Li, Xuelong},
-  journal = {IEEE Transactions on Multimedia (TMM)},
+  journal = {arXiv preprint arXiv:2606.27964},
   volume  = {XX},
   number  = {XX},
   year    = {2026}
